@@ -1,0 +1,58 @@
+[{
+        "id": 1,
+        "name": "The Change-Up",
+        "genre": "comedy",
+        "director": "David Dobkin",
+        "Facebook_like": 252,
+        "actors": [{
+            "id": 1,
+            "name": "Ryan Reynolds"
+        }]
+    },
+    {
+        "id": 2,
+        "name": "Rise of the Planet of the Apes",
+        "genre": "SciFi",
+        "director": "Rupert Wyatt",
+        "Facebook_like": 472,
+        "actors": [],
+        "studio": {
+            "id": 1,
+            "name": "20th Century Fox"
+        }
+    },
+    {
+        "id": 3,
+        "name": "30 Minutes or Less",
+        "genre": "adventure",
+        "director": "Ruben Fleischer",
+        "Facebook_like": 114,
+        "actors": [{
+            "id": 2,
+            "name": "Jesse Eisenberg"
+        }]
+    },
+    {
+        "id": 4,
+        "name": "Final Destination 5",
+        "genre": "Horror",
+        "director": "Steven Quale",
+        "Facebook_like": 241,
+        "actors": []
+    },
+    {
+        "id": 5,
+        "name": "The Social Network",
+        "genre": "Biography",
+        "director": "David Fincher",
+        "Facebook_like": 0,
+        "actors": [{
+            "id": 2,
+            "name": "Jesse Eisenberg"
+        }],
+        "studio": {
+            "id": 2,
+            "name": "Sony Pictures Releasing"
+        }
+    }
+]
