@@ -6,7 +6,8 @@ const config = {
     input: 'src/jpath.js',
     output: {
         file: 'dist/jpath.js',
-        format: 'es'
+        name: 'jPath',
+        format: 'iife'
     },
     plugins: [commonjs()]
 };
