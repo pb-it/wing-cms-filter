@@ -1,0 +1,14 @@
+[ignore]
+
+[include]
+
+[libs]
+
+[lints]
+
+[options]
+
+[strict]
+
+[declarations]
+<PROJECT_ROOT>/node_modules/resolve/.*

@@ -1,27 +1,33 @@
 const fArrEval = require('./array-eval');
-function jPath(json, expression) {
+
+function jPath(json: Array<object>, expression: string) {
     return _parse(json, expression);
 }
-function _parse(json, expression) {
+
+function _parse(json: Array<object>, expression: string) {
     expression = _removeWhitespaces(expression);
+
     if (expression.startsWith("$.")) {
     }
     expression = _unclasp(expression);
+
     if (expression.startsWith("?")) {
     }
     expression = _unclasp2(expression);
+
     return _applyExpression(json, expression);
 }
+
 /**
  * Exit on predicate else recursion
  * No validation - only splitt on boolean equations
  * Each expression is made up of terms. A term can be a predicate, number, ...
- * @param json
- * @param expression
- * @returns
+ * @param json 
+ * @param expression 
+ * @returns 
  */
-function _applyExpression(json, expression) {
-    var res;
+function _applyExpression(json: Array<object>, expression: string) {
+    var res: Array<object>;
     var c;
     var iBraceCnt = 0;
     var bNeg = false;
@@ -64,8 +70,7 @@ function _applyExpression(json, expression) {
                     if (iStart >= 0) {
                         bAnd = true;
                         iEnd = i - 1;
-                    }
-                    else
+                    } else
                         throw new Error("invalid expression");
                 }
                 break;
@@ -74,8 +79,7 @@ function _applyExpression(json, expression) {
                     if (iStart >= 0) {
                         bOr = true;
                         iEnd = i - 1;
-                    }
-                    else
+                    } else
                         throw new Error("invalid expression");
                 }
                 break;
@@ -84,6 +88,7 @@ function _applyExpression(json, expression) {
         if (iEnd >= 0)
             break;
     }
+
     if (iBraceCnt == 0) {
         var part;
         if (iStart >= 0) {
@@ -93,29 +98,30 @@ function _applyExpression(json, expression) {
                 part = expression.substring(iStart, iEnd);
             else if (bExpr)
                 part = expression.substring(iStart + 1, iEnd - 1);
-        }
-        else
+        } else
             part = expression;
+
         if (bPred)
             res = _applyPredicate(json, part);
         else if (bExpr)
             res = _applyExpression(json, part);
         else
             throw new Error("invalid expression"); // TODO: no expession or predicate ok ???
+
         if (bNeg)
             res = json.filter((item) => !res.includes(item));
+
         if (bAnd) {
             res = _applyExpression(res, expression.substring(iEnd + 2));
-        }
-        else if (bOr) {
+        } else if (bOr) {
             res = [...new Set([...res, ..._applyExpression(json, expression.substring(iEnd + 2))])];
         }
-    }
-    else
+    } else
         throw new Error("invalid expression");
     return res;
 }
-function _removeWhitespaces(str) {
+
+function _removeWhitespaces(str: string) {
     var res;
     var parts = str.split('"');
     if (parts.length % 2 == 1) {
@@ -126,63 +132,57 @@ function _removeWhitespaces(str) {
     res = parts.join('"');
     return res;
 }
+
 function _unclasp(str) {
     var between;
     var open = str.indexOf('[');
     var close = str.lastIndexOf(']');
     if (open >= 0 && close > 0) {
         between = str.substring(open + 1, close);
-    }
-    else
+    } else
         throw new Error('incorrect clasping');
     return between;
 }
+
 function _unclasp2(str) {
     var between;
     var open = str.indexOf('(');
     var close = str.lastIndexOf(')');
     if (open >= 0 && close > 0) {
         between = str.substring(open + 1, close);
-    }
-    else
+    } else
         throw new Error('incorrect clasping');
     return between;
 }
+
 function _applyPredicate(json, predicate) {
-    var conform = [];
+    var conform: Array<object> = [];
     if (predicate.startsWith("@.")) {
         predicate = predicate.substring(2);
+
         var operator;
         if (predicate.indexOf("==") >= 0) {
             operator = "==";
-        }
-        else if (predicate.indexOf("!=") >= 0) {
+        } else if (predicate.indexOf("!=") >= 0) {
             operator = "!=";
-        }
-        else if (predicate.indexOf("=~") >= 0) {
+        } else if (predicate.indexOf("=~") >= 0) {
             operator = "=~";
-        }
-        else if (predicate.indexOf(">=") >= 0) {
+        } else if (predicate.indexOf(">=") >= 0) {
             operator = ">=";
-        }
-        else if (predicate.indexOf("<=") >= 0) {
+        } else if (predicate.indexOf("<=") >= 0) {
             operator = "<=";
-        }
-        else if (predicate.indexOf("=") >= 0) {
+        } else if (predicate.indexOf("=") >= 0) {
             throw new Error('invalid operator');
-        }
-        else if (predicate.indexOf(">") >= 0) {
+        } else if (predicate.indexOf(">") >= 0) {
             operator = ">";
-        }
-        else if (predicate.indexOf("<") >= 0) {
+        } else if (predicate.indexOf("<") >= 0) {
             operator = "<";
         }
         var path;
         var result;
         if (operator == null) {
             path = _parsePath(predicate);
-        }
-        else {
+        } else {
             var parts = predicate.split(operator);
             if (parts != null && parts.length == 2) {
                 path = _parsePath(parts[0]);
@@ -190,7 +190,7 @@ function _applyPredicate(json, predicate) {
             }
         }
         if (path != null) {
-            var obj;
+            var obj: object;
             for (var i = 0; i < json.length; i++) {
                 obj = json[i];
                 if (_fulfilled(obj, path, operator, result)) {
@@ -198,28 +198,27 @@ function _applyPredicate(json, predicate) {
                 }
             }
         }
-    }
-    else
+    } else
         throw "invalid predicate";
     return conform;
 }
+
 function _fulfilled(obj, path, operator, result) {
     var fulfilled = false;
+
     if (obj) {
         var field = path[0];
-        var next = obj[field.name];
+        var next: Array<string> = obj[field.name];
         if (next) {
             if (path.length == 1) {
                 if (field.type == FieldEnum.object) {
                     fulfilled = _fulfilledObj(next, operator, result);
                 }
-            }
-            else {
+            } else {
                 var remaining = path.slice(1);
                 if (field.type == FieldEnum.object) {
                     fulfilled = _fulfilled(next, remaining, operator, result);
-                }
-                else if (field.type == FieldEnum.array) {
+                } else if (field.type == FieldEnum.array) {
                     if (path.length == 2) {
                         var nextField = path[1].name;
                         if (nextField == "length()") {
@@ -247,19 +246,18 @@ function _fulfilled(obj, path, operator, result) {
                                     fulfilled = (length < result);
                                     break;
                             }
-                        }
-                        else {
+                        } else {
                             // TODO: works only for id? - regex for name possible?
                             if (operator == "==" || operator == "!=") {
                                 var res = fArrEval(Array.from(next, x => x[nextField]), result);
+
                                 if (operator == "==")
                                     fulfilled = res;
                                 else if (operator == "!=")
                                     fulfilled = !res;
                             }
                         }
-                    }
-                    else {
+                    } else {
                         var arr = next;
                         for (var i = 0; i < arr.length; i++) {
                             fulfilled = _fulfilled(arr[i], remaining, operator, result);
@@ -269,31 +267,32 @@ function _fulfilled(obj, path, operator, result) {
                     }
                 }
             }
-        }
-        else {
+        } else {
             if (operator == "!=")
                 fulfilled = true;
         }
-    }
-    else {
+    } else {
         if (operator == "!=")
             fulfilled = true;
     }
     return fulfilled;
 }
+
 function _fulfilledObj(val, operator, result) {
     var fulfilled = false;
+
     if (operator != null) {
         if (val != null) {
             var parts = result.split('"');
             if (parts.length == 3 && !parts[0] && !parts[2])
                 result = parts[1];
+
             switch (operator) {
                 case "==":
                 case "!=":
                     var regex = new RegExp(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"); // https://stackoverflow.com/questions/18893390/splitting-on-comma-outside-quotes
                     var arr = result.split(regex);
-                    var str;
+                    var str: string;
                     for (var i in arr) {
                         str = arr[i];
                         if (str.startsWith('"') && str.endsWith('"')) {
@@ -301,14 +300,15 @@ function _fulfilledObj(val, operator, result) {
                         }
                     }
                     var match = arr.includes(val.toString());
+
                     if (operator == "==")
                         fulfilled = match;
                     else
                         fulfilled = !match;
                     break;
                 case "=~":
-                    var sRegex = result;
-                    var modifier;
+                    var sRegex: string = result;
+                    var modifier: string | undefined;
                     if (sRegex.indexOf('/') >= 0) {
                         parts = sRegex.split('/');
                         if (parts.length == 3 && parts[0] == "") {
@@ -331,40 +331,46 @@ function _fulfilledObj(val, operator, result) {
                     fulfilled = (val < result);
                     break;
             }
-        }
-        else {
+        } else {
             if (operator == "!=")
                 fulfilled = true;
         }
-    }
-    else {
+    } else {
         fulfilled = (val != null);
     }
     return fulfilled;
 }
-function _parsePath(query) {
-    var path = [];
-    var fields = query.split('.');
+
+function _parsePath(query: string) {
+    var path: Array<string> = [];
+    var fields: Array<string> = query.split('.');
     for (var i = 0; i < fields.length; i++) {
         path.push(_parseField(fields[i]));
     }
     return path;
 }
+
 function _parseField(str) {
     var field;
     if (str.endsWith("[*]")) {
         field = new Field(str.substring(0, str.length - 3), FieldEnum.array);
-    }
-    else {
+    } else {
         field = new Field(str, FieldEnum.object);
     }
     return field;
 }
+
 const FieldEnum = Object.freeze({ "number": 1, "string": 2, "object": 3, "array": 4 });
+
 class Field {
+
+    name;
+    type;
+
     constructor(name, type) {
         this.name = name;
         this.type = type;
     }
 }
+
 module.exports = jPath;

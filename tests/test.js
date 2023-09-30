@@ -1,4 +1,4 @@
-const jPath = require('../src/jpath');
+const jPath = require('../dist/jpath.js');
 
 const data = require('./data.json');
 

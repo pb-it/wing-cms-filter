@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "outDir": "./src",
+        "target": "es6",
+        "module": "CommonJS",
+        "allowJs": true,
+        "declaration": true,
+        "declarationDir": "./types",
+        //"sourceMap": true
+    },
+    "files": [
+        "./src/array-eval.ts",
+        "./src/jpath.ts"
+    ]
+}
