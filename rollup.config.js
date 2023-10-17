@@ -9,7 +9,6 @@ const config = {
     output: {
         name: 'jPath',
         file: 'dist/jpath.js',
-        name: 'jPath',
         format: 'iife',
         //sourcemap: 'inline'
     },

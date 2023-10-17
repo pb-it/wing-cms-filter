@@ -278,15 +278,11 @@ function _fulfilled(obj, path, operator, result) {
     return fulfilled;
 }
 
-function _fulfilledObj(val, operator, result) {
+function _fulfilledObj(val: any, operator: string, result: string) {
     var fulfilled = false;
 
     if (operator != null) {
         if (val != null) {
-            var parts = result.split('"');
-            if (parts.length == 3 && !parts[0] && !parts[2])
-                result = parts[1];
-
             switch (operator) {
                 case "==":
                 case "!=":
@@ -309,11 +305,19 @@ function _fulfilledObj(val, operator, result) {
                 case "=~":
                     var sRegex: string = result;
                     var modifier: string | undefined;
-                    if (sRegex.indexOf('/') >= 0) {
-                        parts = sRegex.split('/');
-                        if (parts.length == 3 && parts[0] == "") {
-                            sRegex = parts[1];
-                            modifier = parts[2];
+                    if (sRegex.startsWith('\'')) {
+                        if (sRegex.endsWith('\''))
+                            sRegex = sRegex.substring(1, sRegex.length - 1);
+                    }
+                    if (sRegex.startsWith('"')) {
+                        if (sRegex.endsWith('"'))
+                            sRegex = sRegex.substring(1, sRegex.length - 1);
+                    }
+                    if (sRegex.startsWith('/')) {
+                        var index = sRegex.lastIndexOf('/');
+                        if (index != 0) {
+                            modifier = sRegex.substring(index + 1);
+                            sRegex = sRegex.substring(1, index);
                         }
                     }
                     fulfilled = new RegExp(sRegex, modifier).test(val);

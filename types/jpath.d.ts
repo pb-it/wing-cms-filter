@@ -15,7 +15,7 @@ declare function _unclasp(str: any): any;
 declare function _unclasp2(str: any): any;
 declare function _applyPredicate(json: any, predicate: any): object[];
 declare function _fulfilled(obj: any, path: any, operator: any, result: any): boolean;
-declare function _fulfilledObj(val: any, operator: any, result: any): boolean;
+declare function _fulfilledObj(val: any, operator: string, result: string): boolean;
 declare function _parsePath(query: string): string[];
 declare function _parseField(str: any): any;
 declare const FieldEnum: Readonly<{

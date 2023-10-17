@@ -1,8 +1,22 @@
-const jPath = require('../dist/jpath.js');
+const jPath = require('../src/jpath');
 
 const data = require('./data.json');
 
 describe("jPath", () => {
+
+    test("boolean", () => {
+        var data = [
+            { 'id': 1, 'bool': true },
+            { 'id': 2, 'bool': false }
+        ];
+
+        var rTrue = data.filter(x => x.id == 1);
+        var rFalse = data.filter(x => x.id == 2);
+
+        expect(jPath(data, "$.[?(@.bool)]")).toEqual(rTrue);
+        expect(jPath(data, "$.[?(!@.bool)]")).toEqual(rFalse);
+        //expect(jPath(data, "$.[?(@.bool == false)]")).toEqual(rFalse);
+    });
 
     test("number", () => {
         var result = data.filter(x => x.id >= 5);
@@ -60,5 +74,18 @@ describe("jPath", () => {
         expect(jPath(data, "$.[?(@.studio.id == 1,2)]")).toEqual(result);
         //expect(jPath(data, "$.[?(@.studio.id in [1,2])]")).toEqual(result); //TODO: ??
         expect(jPath(data, "$.[?(@.studio.name == \"20th Century Fox\",\"Sony Pictures Releasing\")]")).toEqual(result);
+    });
+
+    test("regex", () => {
+        var data = [
+            { 'image': 'data:text/image;base64,...' },
+            { 'image': 'data:text/plain;charset=utf-8,...' }
+        ];
+        var result = data.filter(x => x['image'].startsWith('data:text/image;base64,'));
+        expect(jPath(data, "$.[?(@.image =~ '/data:text/image;base64,/')]")).toEqual(result);
+        expect(jPath(data, "$.[?(@.image =~ '/data:text\/image;base64,/')]")).toEqual(result);
+        expect(jPath(data, "$.[?(@.image =~ '/data:text\\/image;base64,/')]")).toEqual(result);
+        expect(jPath(data, "$.[?(@.image =~ \"/data:text\\/image;base64,/\")]")).toEqual(result);
+        expect(jPath(data, "$.[?(@.image =~ ^data:text/image;base64,.*$)]")).toEqual(result);
     });
 });

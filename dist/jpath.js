@@ -335,9 +335,6 @@ var jPath = (function () {
         var fulfilled = false;
         if (operator != null) {
             if (val != null) {
-                var parts = result.split('"');
-                if (parts.length == 3 && !parts[0] && !parts[2])
-                    result = parts[1];
                 switch (operator) {
                     case "==":
                     case "!=":
@@ -359,11 +356,19 @@ var jPath = (function () {
                     case "=~":
                         var sRegex = result;
                         var modifier;
-                        if (sRegex.indexOf('/') >= 0) {
-                            parts = sRegex.split('/');
-                            if (parts.length == 3 && parts[0] == "") {
-                                sRegex = parts[1];
-                                modifier = parts[2];
+                        if (sRegex.startsWith('\'')) {
+                            if (sRegex.endsWith('\''))
+                                sRegex = sRegex.substring(1, sRegex.length - 1);
+                        }
+                        if (sRegex.startsWith('"')) {
+                            if (sRegex.endsWith('"'))
+                                sRegex = sRegex.substring(1, sRegex.length - 1);
+                        }
+                        if (sRegex.startsWith('/')) {
+                            var index = sRegex.lastIndexOf('/');
+                            if (index != 0) {
+                                modifier = sRegex.substring(index + 1);
+                                sRegex = sRegex.substring(1, index);
                             }
                         }
                         fulfilled = new RegExp(sRegex, modifier).test(val);
