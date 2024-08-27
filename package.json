@@ -10,7 +10,7 @@
         "test": "jest tests/test.js",
         "rollup:help": "rollup --help",
         "build": "tsc&& rollup --config",
-        "build:min": "set NODE_ENV=production&& tsc&&rollup --config",
+        "build:min": "tsc&& rollup --config --environment NODE_ENV:production",
         "babel": "babel src/ -d lib/",
         "eslint": "eslint src/jpath.ts",
         "flow": "flow",
